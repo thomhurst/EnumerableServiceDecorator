@@ -1,4 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
@@ -36,11 +39,14 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
 
             var typeDeclared = methodSymbol.TypeArguments.FirstOrDefault() ?? throw new ArgumentException($"No Type provided for {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)} call");
 
-            var interfaceDeclarationSyntax = typeDeclared.DeclaringSyntaxReferences
+            var typeDeclaredSyntaxes = typeDeclared.DeclaringSyntaxReferences
                 .Select(s => s.GetSyntax())
-                .OfType<InterfaceDeclarationSyntax>()
-                .FirstOrDefault()
-                ?? throw new ArgumentException($"{typeDeclared} must be an interface in order to use in {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)}");
+                .ToList();
+            
+            var interfaceDeclarationSyntax = typeDeclaredSyntaxes
+                                                 .OfType<InterfaceDeclarationSyntax>()
+                                                 .FirstOrDefault()
+                                             ?? throw new ArgumentException($"{typeDeclared} must be an interface in order to use in {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)}{Environment.NewLine}Syntaxes were {string.Join(", ", typeDeclaredSyntaxes)}");
 
             var methodDeclarationSyntaxes = interfaceDeclarationSyntax.Members
                 .OfType<MethodDeclarationSyntax>()

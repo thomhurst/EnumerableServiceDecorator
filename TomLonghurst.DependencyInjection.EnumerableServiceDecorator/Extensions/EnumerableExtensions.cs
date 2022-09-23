@@ -1,4 +1,8 @@
-﻿namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator.Extensions;
 
 internal static class EnumerableExtensions
 {
