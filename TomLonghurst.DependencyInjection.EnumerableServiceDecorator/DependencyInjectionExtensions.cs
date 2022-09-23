@@ -41,9 +41,24 @@ public static class DependencyInjectionExtensions
     {
         return sp =>
         {
-            var constructedInstance = serviceDescriptor.ImplementationInstance ?? ActivatorUtilities.GetServiceOrCreateInstance(sp, serviceDescriptor.ImplementationType);
+            var constructedInstance = ConstructInstance<T>(serviceDescriptor, sp);
 
             return new DecoratorClassWrapper<T>((T)constructedInstance);
         };
+    }
+
+    private static object ConstructInstance<T>(ServiceDescriptor serviceDescriptor, IServiceProvider sp)
+    {
+        if (serviceDescriptor.ImplementationInstance != null)
+        {
+            return serviceDescriptor.ImplementationInstance;
+        }
+
+        if (serviceDescriptor.ImplementationFactory != null)
+        {
+            return serviceDescriptor.ImplementationFactory.Invoke(sp);
+        }
+        
+        return  ActivatorUtilities.GetServiceOrCreateInstance(sp, serviceDescriptor.ImplementationType);
     }
 }
