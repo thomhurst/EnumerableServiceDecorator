@@ -34,17 +34,13 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
                 return;
             }
 
-            var typeDeclared = methodSymbol.TypeArguments.First();
+            var typeDeclared = methodSymbol.TypeArguments.FirstOrDefault() ?? throw new ArgumentException($"No Type provided for {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)} call");
 
             var interfaceDeclarationSyntax = typeDeclared.DeclaringSyntaxReferences
                 .Select(s => s.GetSyntax())
                 .OfType<InterfaceDeclarationSyntax>()
-                .FirstOrDefault();
-
-            if (interfaceDeclarationSyntax is null)
-            {
-                throw new ArgumentException($"{typeDeclared} must be an interface in order to use in {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)}");
-            }
+                .FirstOrDefault()
+                ?? throw new ArgumentException($"{typeDeclared} must be an interface in order to use in {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)}");
 
             var methodDeclarationSyntaxes = interfaceDeclarationSyntax.Members
                 .OfType<MethodDeclarationSyntax>()
