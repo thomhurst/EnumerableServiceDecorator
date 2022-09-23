@@ -46,7 +46,7 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
             var interfaceDeclarationSyntax = typeDeclaredSyntaxes
                                                  .OfType<InterfaceDeclarationSyntax>()
                                                  .FirstOrDefault()
-                                             ?? throw new ArgumentException($"{typeDeclared} must be an interface in order to use in {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)}. Syntaxes were {string.Join(", ", typeDeclaredSyntaxes)}");
+                                             ?? throw new ArgumentException($"{typeDeclared} must be an interface in order to use in {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)}. If it is an interface, make sure that it is public and not nested.");
 
             var methodDeclarationSyntaxes = interfaceDeclarationSyntax.Members
                 .OfType<MethodDeclarationSyntax>()
