@@ -16,7 +16,7 @@ public static class DependencyInjectionExtensions
 
         if (!typeof(T).IsInterface)
         {
-            throw new ArgumentException($"Please register {nameof(T)} as an interface");
+            throw new ArgumentException($"{typeof(T).FullName} must be an interface in order to use in {nameof(FlattenEnumerableToSingle)}");
         }
 
         var serviceDescriptors = services

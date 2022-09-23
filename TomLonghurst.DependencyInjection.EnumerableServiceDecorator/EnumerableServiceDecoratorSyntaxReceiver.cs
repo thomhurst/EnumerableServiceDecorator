@@ -39,7 +39,12 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
             var interfaceDeclarationSyntax = typeDeclared.DeclaringSyntaxReferences
                 .Select(s => s.GetSyntax())
                 .OfType<InterfaceDeclarationSyntax>()
-                .First();
+                .FirstOrDefault();
+
+            if (interfaceDeclarationSyntax is null)
+            {
+                throw new ArgumentException($"{typeDeclared} must be an interface in order to use in {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)}");
+            }
 
             var methodDeclarationSyntaxes = interfaceDeclarationSyntax.Members
                 .OfType<MethodDeclarationSyntax>()
@@ -48,7 +53,7 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
             var returnTypeExceptions = methodDeclarationSyntaxes
                 .Where(m => m.ReturnType.ToString() is not ("void" or "Task" or "ValueTask"))
                 .Select(m =>
-                    new ArgumentException($"Only void or Task return types are supported. Cannot convert {m.ReturnType} to IEnumerable<{m.ReturnType}>")
+                    new ArgumentException($"Only void or Task return types are supported. Cannot convert IEnumerable<{m.ReturnType}> to {m.ReturnType}")
                 ).ToList();
 
             if (returnTypeExceptions.Any())
