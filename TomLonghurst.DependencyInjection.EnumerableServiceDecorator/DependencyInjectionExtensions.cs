@@ -41,13 +41,13 @@ public static class DependencyInjectionExtensions
     {
         return sp =>
         {
-            var constructedInstance = ConstructInstance<T>(serviceDescriptor, sp);
+            var constructedInstance = ConstructInstance(serviceDescriptor, sp);
 
             return new DecoratorClassWrapper<T>((T)constructedInstance);
         };
     }
 
-    private static object ConstructInstance<T>(ServiceDescriptor serviceDescriptor, IServiceProvider sp)
+    private static object ConstructInstance(ServiceDescriptor serviceDescriptor, IServiceProvider sp)
     {
         if (serviceDescriptor.ImplementationInstance != null)
         {
