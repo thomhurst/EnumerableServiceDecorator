@@ -1,10 +1,12 @@
 # EnumerableServiceDecorator
+
 Call all IEnumerable&lt;T> by calling a single injected T
 
 [![nuget](https://img.shields.io/nuget/v/TomLonghurst.DependencyInjection.EnumerableServiceDecorator.svg)](https://www.nuget.org/packages/TomLonghurst.DependencyInjection.EnumerableServiceDecorator/)
+
 <!-- ![Nuget](https://img.shields.io/nuget/dt/TomLonghurst.DependencyInjection.EnumerableServiceDecorator) -->
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8beecb46a6eb425eb61ae8a476581232)](https://www.codacy.com/gh/thomhurst/EnumerableServiceDecorator/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=thomhurst/EnumerableServiceDecorator&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8beecb46a6eb425eb61ae8a476581232)](https://www.codacy.com/gh/thomhurst/EnumerableServiceDecorator/dashboard?utm_source=github.com&utm_medium=referral&utm_content=thomhurst/EnumerableServiceDecorator&utm_campaign=Badge_Grade)
 
 [![CodeFactor](https://www.codefactor.io/repository/github/thomhurst/enumerableservicedecorator/badge)](https://www.codefactor.io/repository/github/thomhurst/enumerableservicedecorator)
 
@@ -16,7 +18,7 @@ If you like this library, consider buying me a coffee.
 
 ## Usage
 
-1. Register multiple implementations of your interfaces(s)
+1.  Register multiple implementations of your interfaces(s)
 
 ```csharp
 services.AddSingleton<IMyInterface, MyImplementation1>()
@@ -24,13 +26,13 @@ services.AddSingleton<IMyInterface, MyImplementation1>()
     .AddSingleton<IMyInterface, MyImplementation3>();
 ```
 
-2. After all your dependencies have been added (so at the END - the order matters!) call `FlattenEnumerableToSingle<T>`
+2.  After all your dependencies have been added (so at the END - the order matters!) call `FlattenEnumerableToSingle<T>`
 
 ```csharp
         services.FlattenEnumerableToSingle<IMyInterface>()
 ```
 
-3. Inject just one `T` into your class
+3.  Inject just one `T` into your class
 
 ```csharp
 public class MyWorker
@@ -44,7 +46,7 @@ public class MyWorker
 }
 ```
 
-4. Call a method on your interface. It'll automagically call the same method in all of your registered classes
+4.  Call a method on your interface. It'll automagically call the same method in all of your registered classes
 
 ```csharp
 _myInterface.DoSomething();
@@ -52,6 +54,7 @@ await _myInterface.DoSomethingElseAsync();
 ```
 
 The above will essentially do:
+
 ```csharp
 MyImplementation1.DoSomething();
 MyImplementation2.DoSomething();
@@ -62,7 +65,7 @@ await MyImplementation2.DoSomethingElseAsync();
 await MyImplementation3.DoSomethingElseAsync();
 ```
 
-5. Enjoy!
+5.  Enjoy!
 
 ## Caveats
 
@@ -71,5 +74,5 @@ The type to be flattened must be an interface.
 This doesn't support Properties in your interfaces. There's no way to return multiple implementations of a property in just a single property.
 
 The same with methods with return types. We can't turn an IEnumerable<T> into a T. 
-    
+
 So we can only support interfaces with methods that return void or Task.
