@@ -2,7 +2,7 @@
 Call all IEnumerable&lt;T> by calling a single injected T
 
 [![nuget](https://img.shields.io/nuget/v/TomLonghurst.DependencyInjection.EnumerableServiceDecorator.svg)](https://www.nuget.org/packages/TomLonghurst.DependencyInjection.EnumerableServiceDecorator/)
-![Nuget](https://img.shields.io/nuget/dt/TomLonghurst.DependencyInjection.EnumerableServiceDecorator)
+<!-- ![Nuget](https://img.shields.io/nuget/dt/TomLonghurst.DependencyInjection.EnumerableServiceDecorator) -->
 
 ## Support
 
