@@ -62,6 +62,8 @@ await MyImplementation3.DoSomethingElseAsync();
 
 ## Caveats
 
+The type to be flattened must be an interface.
+
 This doesn't support Properties in your interfaces. There's no way to return multiple implementations of a property in just a single property.
 
 The same with methods with return types. We can't turn an IEnumerable<T> into a T. 
