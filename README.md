@@ -1,8 +1,14 @@
 # EnumerableServiceDecorator
 Call all IEnumerable&lt;T> by calling a single injected T
 
-## Installation
-via Nuget: TomLonghurst.DependencyInjection.EnumerableServiceDecorator
+[![nuget](https://img.shields.io/nuget/v/TomLonghurst.DependencyInjection.EnumerableServiceDecorator.svg)](https://www.nuget.org/packages/TomLonghurst.DependencyInjection.EnumerableServiceDecorator/)
+![Nuget](https://img.shields.io/nuget/dt/TomLonghurst.DependencyInjection.EnumerableServiceDecorator)
+
+## Support
+
+If you like this library, consider buying me a coffee.
+
+<a href="https://www.buymeacoffee.com/tomhurst" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
 ## Usage
 
