@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
@@ -37,22 +34,20 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
                 return;
             }
 
-            var typeDeclared = methodSymbol.TypeArguments.FirstOrDefault() ?? throw new ArgumentException($"No Type provided for {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)} call");
+            var interfaceSymbol = methodSymbol.TypeArguments.FirstOrDefault() ?? throw new ArgumentException($"No Type provided for {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)} call");
 
-            var typeDeclaredSyntaxes = typeDeclared.DeclaringSyntaxReferences
-                .Select(s => s.GetSyntax())
-                .ToList();
-            
-            var interfaceDeclarationSyntax = typeDeclaredSyntaxes
-                                                 .OfType<InterfaceDeclarationSyntax>()
-                                                 .FirstOrDefault()
-                                             ?? throw new ArgumentException($"{typeDeclared} must be an interface in order to use in {nameof(DependencyInjectionExtensions.FlattenEnumerableToSingle)}. If it is an interface, make sure that it is public and not nested.");
+            var interfaceSymbols = interfaceSymbol.GetMembers();
 
-            var methodDeclarationSyntaxes = interfaceDeclarationSyntax.Members
-                .OfType<MethodDeclarationSyntax>()
+            if (interfaceSymbols.OfType<IPropertySymbol>().Any())
+            {
+                throw new ArgumentException("Properties are not supported. Cannot return multiple property implementations from a single flattened class.");
+            }
+
+            var interfaceMethodSymbols = interfaceSymbols
+                .OfType<IMethodSymbol>()
                 .ToList();
 
-            var returnTypeExceptions = methodDeclarationSyntaxes
+            var returnTypeExceptions = interfaceMethodSymbols
                 .Where(m => m.ReturnType.ToString() is not ("void" or "Task" or "ValueTask"))
                 .Select(m =>
                     new ArgumentException($"Only void or Task return types are supported. Cannot convert IEnumerable<{m.ReturnType}> to {m.ReturnType}")
@@ -65,9 +60,9 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
             
             IdentifiedDecorators.Add(new IndentifiedDecorator
             {
-                InterfaceType = typeDeclared,
+                InterfaceType = interfaceSymbol,
                 DependencyInjectionMethodCall = methodSymbol,
-                MethodsInInterfaceSyntaxes = methodDeclarationSyntaxes,
+                MethodsInInterface = interfaceMethodSymbols,
             });
         }
     }

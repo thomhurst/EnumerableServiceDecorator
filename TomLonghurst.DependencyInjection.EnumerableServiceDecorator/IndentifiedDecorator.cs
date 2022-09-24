@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
 
 namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator;
 
@@ -8,9 +6,7 @@ public class IndentifiedDecorator
 {
     public IMethodSymbol DependencyInjectionMethodCall { get; set; }
         
-    public ITypeSymbol InterfaceType { get; set; } 
-        
-    public IEnumerable<MethodDeclarationSyntax> MethodsInInterfaceSyntaxes { get; set; }
-    
-    public IEnumerable<IMethodSymbol> MethodsInInterfaceSymbols { get; set; }
+    public ITypeSymbol InterfaceType { get; set; }
+
+    public IReadOnlyList<IMethodSymbol> MethodsInInterface { get; set; }
 }

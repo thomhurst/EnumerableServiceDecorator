@@ -1,9 +1,6 @@
-using System.Diagnostics;
-using System.Reflection;
 using System.Text;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using TomLonghurst.DependencyInjection.EnumerableServiceDecorator;
+using TomLonghurst.DependencyInjection.EnumerableServiceDecorator.UnitTests.DependentProject;
 
 namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator.UnitTests;
 
@@ -20,7 +17,7 @@ public class Tests
             .BuildServiceProvider();
         
         var stringBuilder = new StringBuilder();
-
+    
         var myInterface = serviceProvider.GetRequiredService<IMyTestInterface>();
         
         Assert.That(myInterface.GetType(), Is.EqualTo(typeof(TomLonghurstDependencyInjectionEnumerableServiceDecoratorUnitTestsIMyTestInterfaceEnumerableServiceDecorator)));
@@ -29,7 +26,7 @@ public class Tests
         
         Assert.That(stringBuilder.ToString(), Is.EqualTo("MyTestClass MyTestClass2 MyTestClass3 "));
     }
-
+    
     [Test]
     public async Task AsyncTest()
     {
@@ -41,21 +38,21 @@ public class Tests
             .BuildServiceProvider();
         
         var stringBuilder = new StringBuilder();
-
+    
         var myInterface = serviceProvider.GetRequiredService<IMyAsyncTestInterface>();
         
         Assert.That(myInterface.GetType(), Is.EqualTo(typeof(TomLonghurstDependencyInjectionEnumerableServiceDecoratorUnitTestsIMyAsyncTestInterfaceEnumerableServiceDecorator)));
-
+    
         var task = myInterface.BlahAsync(async str =>
         {
             await Task.Delay(1000);
             stringBuilder.Append(str + " ");
         });
-
+    
         // We didn't await so no time for the StringBuilder to be called
         
         Assert.That(stringBuilder.ToString(), Is.EqualTo(""));
-
+    
         await task;
         
         Assert.That(stringBuilder.ToString(), Is.EqualTo("MyAsyncTestClass MyAsyncTestClass2 MyAsyncTestClass3 "));
@@ -72,21 +69,21 @@ public class Tests
             .BuildServiceProvider();
         
         var stringBuilder = new StringBuilder();
-
+    
         var myInterface = serviceProvider.GetRequiredService<IMyValueTaskAsyncTestInterface>();
         
         Assert.That(myInterface.GetType(), Is.EqualTo(typeof(TomLonghurstDependencyInjectionEnumerableServiceDecoratorUnitTestsIMyValueTaskAsyncTestInterfaceEnumerableServiceDecorator)));
-
+    
         var task = myInterface.BlahAsync(async str =>
         {
             await Task.Delay(100);
             stringBuilder.Append(str + " ");
         });
-
+    
         // We didn't await so no time for the StringBuilder to be called
         
         Assert.That(stringBuilder.ToString(), Is.EqualTo(""));
-
+    
         await task;
         
         Assert.That(stringBuilder.ToString(), Is.EqualTo("MyValueTaskAsyncTestClass MyValueTaskAsyncTestClass2 MyValueTaskAsyncTestClass3 "));
@@ -105,7 +102,7 @@ public class Tests
             .AddSingleton(provider => mock3.Object)
             .FlattenEnumerableToSingle<IMyTestInterface>()
             .BuildServiceProvider();
-
+    
         var scope = services.CreateScope().ServiceProvider;
         scope.GetRequiredService<IMyTestInterface>().Blah(str => {});
         
@@ -118,5 +115,28 @@ public class Tests
         mock1.Verify(x => x.Blah(It.IsAny<Action<string>>()), Times.Exactly(2));
         mock2.Verify(x => x.Blah(It.IsAny<Action<string>>()), Times.Exactly(2));
         mock3.Verify(x => x.Blah(It.IsAny<Action<string>>()), Times.Exactly(2));
+    }
+    
+    [Test]
+    public void DependentProjectClass()
+    {
+        var serviceProvider = new ServiceCollection()
+            .AddSingleton<IMyDependentInterface, MyDependentClass>()
+            .AddSingleton<IMyDependentInterface, MyDependentClass>()
+            .AddSingleton<IMyDependentInterface, MyDependentClass>()
+            .FlattenEnumerableToSingle<IMyDependentInterface>()
+            .BuildServiceProvider();
+        
+        var stringBuilder = new StringBuilder();
+
+        var myInterface = serviceProvider.GetRequiredService<IMyDependentInterface>();
+        
+        Assert.That(myInterface.GetType(), Is.EqualTo(typeof(TomLonghurstDependencyInjectionEnumerableServiceDecoratorUnitTestsDependentProjectIMyDependentInterfaceEnumerableServiceDecorator)));
+
+        var result = 1;
+        
+        myInterface.MyDependentMethod(ref result);
+        
+        Assert.That(result, Is.EqualTo(123));
     }
 }

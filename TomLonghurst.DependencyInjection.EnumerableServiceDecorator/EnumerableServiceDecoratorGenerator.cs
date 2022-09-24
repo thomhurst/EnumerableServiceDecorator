@@ -1,12 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using TomLonghurst.DependencyInjection.EnumerableServiceDecorator.Extensions;
 using TomLonghurst.DependencyInjection.EnumerableServiceDecorator.Helpers;
 
 namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator;
@@ -78,20 +72,25 @@ public class EnumerableServiceDecoratorGenerator : ISourceGenerator
             codeWriter.WriteLine("}");
             codeWriter.WriteLine();
             
-            foreach (var methodSymbol in identifiedDecorator.MethodsInInterfaceSyntaxes)
+            foreach (var methodSymbol in identifiedDecorator.MethodsInInterface)
             {
-                var parametersWithType = methodSymbol.ParameterList.Parameters.Select(p =>
-                    $"{context.Compilation.GetSemanticModel(methodSymbol.SyntaxTree).GetSymbolInfo(p.Type).Symbol} {p.Identifier}");
+                var parametersWithType = methodSymbol.Parameters.Select(p =>
+                    $"{GetRef(p.RefKind)} {string.Join(" ", p.RefCustomModifiers)} {string.Join(" ", p.CustomModifiers)} {p.Type.ToDisplayString(SymbolDisplayFormats.NamespaceAndType)} {p.Name}".Trim());
 
-                var returnType = context.Compilation.GetSemanticModel(methodSymbol.SyntaxTree)
-                    .GetSymbolInfo(methodSymbol.ReturnType).Symbol;
-                var async = returnType.ToString() == "void" ? string.Empty : "async ";
-
-                var parameterNames = methodSymbol.ParameterList.Parameters.Select(p => string.Join(", ", p.Identifier));
+                var returnType = methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormats.NamespaceAndType) ;
                 
-                codeWriter.WriteLine( $"public {async}{returnType} {methodSymbol.Identifier}{GetGenericType(methodSymbol)}({string.Join(", ", parametersWithType)})");
+                if (returnType == "System.Void")
+                {
+                    returnType = "void";
+                }
+
+                var async = methodSymbol.ReturnType.SpecialType == SpecialType.System_Void ? string.Empty : "async ";
+
+                var parameterNames = methodSymbol.Parameters.Select(p => string.Join(", ", p.Name));
+                
+                codeWriter.WriteLine( $"public {async}{returnType} {methodSymbol.Name}{GetGenericType(methodSymbol)}({string.Join(", ", parametersWithType)})");
                 codeWriter.WriteLine("{");
-                GenerateBody(codeWriter, methodSymbol, parameterNames);
+                GenerateBody(codeWriter, methodSymbol);
                 codeWriter.WriteLine("}");
                 codeWriter.WriteLine();
             }
@@ -104,32 +103,48 @@ public class EnumerableServiceDecoratorGenerator : ISourceGenerator
         return codeWriter.ToString();
     }
 
-    private static void GenerateBody(TextWriter codeWriter, MethodDeclarationSyntax methodSymbol, IEnumerable<string> parameterNames)
+    private static void GenerateBody(TextWriter codeWriter, IMethodSymbol methodSymbol)
     {
+        var parameters = methodSymbol.Parameters.Select(
+            p => $"{GetRef(p.RefKind)} {p.Name}".Trim()
+        );
+        
         if (methodSymbol.ReturnType.ToString() == "void")
         {
             codeWriter.WriteLine("foreach (var wrapper in _wrappers)");
             codeWriter.WriteLine("{");
-            codeWriter.WriteLine($"wrapper.Value.{methodSymbol.Identifier}({string.Join(", ", parameterNames)});");
+            codeWriter.WriteLine($"wrapper.Value.{methodSymbol.Name}({string.Join(", ", parameters)});");
             codeWriter.WriteLine("}");
         }
         else
         {
-            codeWriter.WriteLine($"foreach (var task in _wrappers.Select(wrapper => wrapper.Value.{methodSymbol.Identifier}({string.Join(", ", parameterNames)})))");
+            codeWriter.WriteLine($"foreach (var task in _wrappers.Select(wrapper => wrapper.Value.{methodSymbol.Name}({string.Join(", ", parameters)})))");
             codeWriter.WriteLine("{");
             codeWriter.WriteLine("await task;");
             codeWriter.WriteLine("}");
         }
     }
 
-    private string GetGenericType(MethodDeclarationSyntax method)
+    private static string GetGenericType(IMethodSymbol method)
     {
-        if (method.TypeParameterList?.Parameters.Any() != true)
+        if (method.TypeParameters.Any() != true)
         {
             return string.Empty;
         }
 
-        var genericTypes = method.TypeParameterList.Parameters.Select(x => x.Identifier);
+        var genericTypes = method.TypeParameters.Select(x => x.Name);
         return $"<{string.Join(", ", genericTypes)}>";
+    }
+
+    private static string GetRef(RefKind refKind)
+    {
+        return refKind switch
+        {
+            RefKind.None => string.Empty,
+            RefKind.Ref => "ref",
+            RefKind.Out => "out",
+            RefKind.In => "in",
+            _ => throw new ArgumentOutOfRangeException(nameof(refKind), refKind, null)
+        };
     }
 }

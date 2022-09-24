@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TomLonghurst.DependencyInjection.EnumerableServiceDecorator\TomLonghurst.DependencyInjection.EnumerableServiceDecorator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" SetTargetFramework="TargetFramework=netstandard2.0" />
+        <ProjectReference Include="..\TomLonghurst.DependencyInjection.EnumerableServiceDecorator.UnitTests.DependentProject\TomLonghurst.DependencyInjection.EnumerableServiceDecorator.UnitTests.DependentProject.csproj" />
     </ItemGroup>
 
 </Project>

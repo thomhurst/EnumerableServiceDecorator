@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -26,7 +24,7 @@ public static class DependencyInjectionExtensions
             .ToList();
 
         services.RemoveAll<T>();
-        
+
         var type = Assembly.GetCallingAssembly().GetType($"{typeof(T).Namespace}.{typeof(T).FullName.Replace(".", string.Empty)}EnumerableServiceDecorator");
 
         foreach (var serviceDescriptor in serviceDescriptors)
