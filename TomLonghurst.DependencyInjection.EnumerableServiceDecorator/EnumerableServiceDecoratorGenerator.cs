@@ -8,6 +8,9 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator;
 [Generator]
 public class EnumerableServiceDecoratorGenerator : ISourceGenerator
 {
+    private const string AsyncKeyword = "async ";
+    private const string VoidKeyword = "void";
+
     public void Initialize(GeneratorInitializationContext context)
     {
 #if DEBUG
@@ -81,13 +84,11 @@ public class EnumerableServiceDecoratorGenerator : ISourceGenerator
                 
                 if (returnType == "System.Void")
                 {
-                    returnType = "void";
+                    returnType = VoidKeyword;
                 }
 
-                var async = methodSymbol.ReturnType.SpecialType == SpecialType.System_Void ? string.Empty : "async ";
+                var async = methodSymbol.ReturnType.SpecialType == SpecialType.System_Void ? string.Empty : AsyncKeyword;
 
-                var parameterNames = methodSymbol.Parameters.Select(p => string.Join(", ", p.Name));
-                
                 codeWriter.WriteLine( $"public {async}{returnType} {methodSymbol.Name}{GetGenericType(methodSymbol)}({string.Join(", ", parametersWithType)})");
                 codeWriter.WriteLine("{");
                 GenerateBody(codeWriter, methodSymbol);
@@ -109,7 +110,7 @@ public class EnumerableServiceDecoratorGenerator : ISourceGenerator
             p => $"{GetRef(p.RefKind)} {p.Name}".Trim()
         );
         
-        if (methodSymbol.ReturnType.ToString() == "void")
+        if (methodSymbol.ReturnType.SpecialType == SpecialType.System_Void)
         {
             codeWriter.WriteLine("foreach (var wrapper in _wrappers)");
             codeWriter.WriteLine("{");
