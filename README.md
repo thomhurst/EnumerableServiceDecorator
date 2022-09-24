@@ -59,3 +59,11 @@ await MyImplementation3.DoSomethingElseAsync();
 ```
 
 5. Enjoy!
+
+## Caveats
+
+This doesn't support Properties in your interfaces. There's no way to return multiple implementations of a property in just a single property.
+
+The same with methods with return types. We can't turn an IEnumerable<T> into a T. 
+    
+So we can only support interfaces with methods that return void or Task.
