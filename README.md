@@ -4,6 +4,10 @@ Call all IEnumerable&lt;T> by calling a single injected T
 [![nuget](https://img.shields.io/nuget/v/TomLonghurst.DependencyInjection.EnumerableServiceDecorator.svg)](https://www.nuget.org/packages/TomLonghurst.DependencyInjection.EnumerableServiceDecorator/)
 <!-- ![Nuget](https://img.shields.io/nuget/dt/TomLonghurst.DependencyInjection.EnumerableServiceDecorator) -->
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8beecb46a6eb425eb61ae8a476581232)](https://www.codacy.com/gh/thomhurst/EnumerableServiceDecorator/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=thomhurst/EnumerableServiceDecorator&amp;utm_campaign=Badge_Grade)
+
+[![CodeFactor](https://www.codefactor.io/repository/github/thomhurst/enumerableservicedecorator/badge)](https://www.codefactor.io/repository/github/thomhurst/enumerableservicedecorator)
+
 ## Support
 
 If you like this library, consider buying me a coffee.
