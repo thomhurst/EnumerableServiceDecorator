@@ -1,5 +1,7 @@
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using TomLonghurst.DependencyInjection.EnumerableServiceDecorator;
 using TomLonghurst.DependencyInjection.EnumerableServiceDecorator.UnitTests.DependentProject;
 
 namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator.UnitTests;
@@ -127,8 +129,6 @@ public class Tests
             .FlattenEnumerableToSingle<IMyDependentInterface>()
             .BuildServiceProvider();
         
-        var stringBuilder = new StringBuilder();
-
         var myInterface = serviceProvider.GetRequiredService<IMyDependentInterface>();
         
         Assert.That(myInterface.GetType(), Is.EqualTo(typeof(TomLonghurstDependencyInjectionEnumerableServiceDecoratorUnitTestsDependentProjectIMyDependentInterfaceEnumerableServiceDecorator)));

@@ -47,8 +47,15 @@ namespace TomLonghurst.DependencyInjection.EnumerableServiceDecorator
                 .OfType<IMethodSymbol>()
                 .ToList();
 
+            var allowedTypes = new[]
+            {
+                typeof(Task).FullName,
+                typeof(void).FullName,
+                typeof(ValueTask).FullName
+            };
+
             var returnTypeExceptions = interfaceMethodSymbols
-                .Where(m => m.ReturnType.ToString() is not ("void" or "Task" or "ValueTask"))
+                .Where(m => !allowedTypes.Contains(m.ReturnType.ToDisplayString(SymbolDisplayFormats.NamespaceAndType)))
                 .Select(m =>
                     new ArgumentException($"Only void or Task return types are supported. Cannot convert IEnumerable<{m.ReturnType}> to {m.ReturnType}")
                 ).ToList();

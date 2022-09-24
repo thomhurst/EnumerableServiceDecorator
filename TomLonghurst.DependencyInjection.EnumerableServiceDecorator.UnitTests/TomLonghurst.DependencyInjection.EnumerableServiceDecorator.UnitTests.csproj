@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\TomLonghurst.DependencyInjection.EnumerableServiceDecorator\TomLonghurst.DependencyInjection.EnumerableServiceDecorator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
         <ProjectReference Include="..\TomLonghurst.DependencyInjection.EnumerableServiceDecorator.UnitTests.DependentProject\TomLonghurst.DependencyInjection.EnumerableServiceDecorator.UnitTests.DependentProject.csproj" />
     </ItemGroup>
 
